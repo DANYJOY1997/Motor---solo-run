@@ -66,20 +66,17 @@
     </select>
   </div>
 
-  <!-- View One Filter -->
   <div class="section" id="filterSection">
     <label>Enter Motor Tag to View:</label>
     <input type="text" id="filterInput" placeholder="e.g., CGM-700" oninput="filterMotors()">
   </div>
 
-  <!-- Password Prompt -->
   <div class="section" id="passwordSection">
     <label>Enter Password:</label>
     <input type="password" id="passwordInput">
     <button onclick="checkPassword()">Submit</button>
   </div>
 
-  <!-- Add Motor Form -->
   <div class="section">
     <form id="addForm">
       <h2>📥 Add Motor</h2>
@@ -88,7 +85,6 @@
     </form>
   </div>
 
-  <!-- Edit Motor Form -->
   <div class="section">
     <form id="editForm">
       <h2>🛠 Edit Motor</h2>
@@ -99,7 +95,6 @@
     </form>
   </div>
 
-  <!-- Motor Log Table -->
   <div class="section" id="motorLogSection">
     <h2>📄 Motor Log</h2>
     <table id="motorTable">
@@ -109,15 +104,15 @@
           <th>Tag</th>
           <th>FLC</th>
           <th>NLC</th>
-          <th>Voltage</th>
+          <th>Rated Voltage</th>
           <th>Rotation</th>
-          <th>DE Start</th>
-          <th>DE End</th>
-          <th>Winding Start</th>
-          <th>Winding End</th>
-          <th>NDE Start</th>
-          <th>NDE End</th>
-          <th>Sound</th>
+          <th>Temp DE (Start)</th>
+          <th>Temp DE (End)</th>
+          <th>Temp Winding (Start)</th>
+          <th>Temp Winding (End)</th>
+          <th>Temp NDE (Start)</th>
+          <th>Temp NDE (End)</th>
+          <th>Abnormal Sound</th>
           <th>Remarks</th>
         </tr>
       </thead>
@@ -140,12 +135,12 @@
       { id: "nlc", label: "NLC (A)", type: "text" },
       { id: "voltage", label: "Rated Voltage (V)", type: "text" },
       { id: "rotation", label: "Direction of Rotation", type: "text" },
-      { id: "temp_de_start", label: "Temp DE Start (°C)", type: "text" },
-      { id: "temp_de_end", label: "Temp DE End (°C)", type: "text" },
-      { id: "winding_start", label: "Winding Temp Start (°C)", type: "text" },
-      { id: "winding_end", label: "Winding Temp End (°C)", type: "text" },
-      { id: "temp_nde_start", label: "Temp NDE Start (°C)", type: "text" },
-      { id: "temp_nde_end", label: "Temp NDE End (°C)", type: "text" },
+      { id: "temp_de_start", label: "Temp DE (Start)", type: "text" },
+      { id: "temp_de_end", label: "Temp DE (End)", type: "text" },
+      { id: "winding_start", label: "Temp Winding (Start)", type: "text" },
+      { id: "winding_end", label: "Temp Winding (End)", type: "text" },
+      { id: "temp_nde_start", label: "Temp NDE (Start)", type: "text" },
+      { id: "temp_nde_end", label: "Temp NDE (End)", type: "text" },
       { id: "sound", label: "Abnormal Sound", type: "select", options: ["No", "Yes"] },
       { id: "remarks", label: "Remarks", type: "textarea" },
     ];
@@ -277,7 +272,7 @@
       } else if (action === "viewOne") {
         document.getElementById("filterSection").style.display = "block";
         filterInput.value = "";
-        loadMotors(); // load all for filter
+        loadMotors();
       } else if (action === "viewAll") {
         document.getElementById("motorLogSection").style.display = "block";
         loadMotors();
@@ -310,9 +305,9 @@
       doc.text("Motor Log Report", 14, 15);
 
       const headers = [[
-        "Date", "Tag", "FLC", "NLC", "Voltage", "Rotation",
-        "DE Start", "DE End", "Winding Start", "Winding End",
-        "NDE Start", "NDE End", "Sound", "Remarks"
+        "Date", "Tag", "FLC", "NLC", "Rated Voltage", "Rotation",
+        "Temp DE (Start)", "Temp DE (End)", "Temp Winding (Start)", "Temp Winding (End)",
+        "Temp NDE (Start)", "Temp NDE (End)", "Abnormal Sound", "Remarks"
       ]];
 
       const rows = [];
