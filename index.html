@@ -44,7 +44,7 @@
       padding: 10px;
       text-align: left;
     }
-    #motorForm {
+    #motorForm, #passwordSection, #filterSection {
       display: none;
     }
   </style>
@@ -58,13 +58,20 @@
     <label><strong>Select Action:</strong></label>
     <select id="actionSelect" onchange="handleAction(this.value)">
       <option value="">-- Choose --</option>
-      <option value="view">📄 View Motor Log</option>
+      <option value="viewAll">📄 View All Motors</option>
+      <option value="viewOne">🔍 View Specific Motor</option>
       <option value="edit">✏️ Add / Edit Motor</option>
     </select>
   </div>
 
+  <!-- View One Filter -->
+  <div class="section" id="filterSection">
+    <label>Enter Motor Tag to View:</label>
+    <input type="text" id="filterInput" oninput="filterMotors()">
+  </div>
+
   <!-- Password Prompt -->
-  <div class="section" id="passwordSection" style="display:none;">
+  <div class="section" id="passwordSection">
     <label>Enter Password:</label>
     <input type="password" id="passwordInput">
     <button onclick="checkPassword()">Submit</button>
@@ -124,7 +131,7 @@
     </form>
   </div>
 
-  <!-- View Table -->
+  <!-- Motor Log Table -->
   <div class="section">
     <h2>📄 Motor Log</h2>
     <table id="motorTable">
@@ -153,12 +160,18 @@
 
   <script>
     const form = document.getElementById("motorForm");
-    const table = document.querySelector("#motorTable tbody");
+    const tableBody = document.querySelector("#motorTable tbody");
+    const filterInput = document.getElementById("filterInput");
 
-    function loadMotors() {
+    function loadMotors(filter = "") {
       const motors = JSON.parse(localStorage.getItem("motors")) || [];
-      table.innerHTML = "";
-      motors.forEach((m, i) => {
+      tableBody.innerHTML = "";
+
+      const filtered = motors.filter(m =>
+        m.tag.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      filtered.forEach((m, i) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${m.date}</td>
@@ -177,7 +190,7 @@
           <td>${m.remarks}</td>
           <td><button onclick="editMotor(${i})">Edit</button></td>
         `;
-        table.appendChild(row);
+        tableBody.appendChild(row);
       });
     }
 
@@ -235,25 +248,36 @@
     };
 
     function handleAction(action) {
-      document.getElementById("motorForm").style.display = "none";
+      form.style.display = "none";
       document.getElementById("passwordSection").style.display = "none";
+      document.getElementById("filterSection").style.display = "none";
+      loadMotors(); // show all by default
+
       if (action === "edit") {
         document.getElementById("passwordSection").style.display = "block";
+      } else if (action === "viewOne") {
+        document.getElementById("filterSection").style.display = "block";
+        filterInput.value = "";
+        loadMotors(""); // load all so search can work
       }
     }
 
     function checkPassword() {
       const pass = document.getElementById("passwordInput").value;
       if (pass === "area123") {
-        document.getElementById("motorForm").style.display = "block";
+        form.style.display = "block";
         document.getElementById("passwordSection").style.display = "none";
       } else {
         alert("Incorrect password!");
       }
     }
 
-    loadMotors();
+    function filterMotors() {
+      loadMotors(filterInput.value);
+    }
+
+    loadMotors(); // initial view
   </script>
 
 </body>
-</html>
+</html>>
