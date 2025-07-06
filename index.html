@@ -48,7 +48,6 @@
       display: none;
     }
   </style>
-  <!-- jsPDF + autoTable CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -56,7 +55,6 @@
 
   <h1>🔌 Motor Data Logger</h1>
 
-  <!-- Action Selection -->
   <div class="section">
     <label><strong>Select Action:</strong></label>
     <select id="actionSelect" onchange="handleAction(this.value)">
@@ -71,7 +69,7 @@
   <!-- View One Filter -->
   <div class="section" id="filterSection">
     <label>Enter Motor Tag to View:</label>
-    <input type="text" id="filterInput" oninput="filterMotors()">
+    <input type="text" id="filterInput" placeholder="e.g., CGM-700" oninput="filterMotors()">
   </div>
 
   <!-- Password Prompt -->
@@ -279,6 +277,7 @@
       } else if (action === "viewOne") {
         document.getElementById("filterSection").style.display = "block";
         filterInput.value = "";
+        loadMotors(); // load all for filter
       } else if (action === "viewAll") {
         document.getElementById("motorLogSection").style.display = "block";
         loadMotors();
@@ -340,6 +339,5 @@
       doc.save("motor_log.pdf");
     }
   </script>
-
 </body>
 </html>
