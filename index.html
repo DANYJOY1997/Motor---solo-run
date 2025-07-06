@@ -68,7 +68,8 @@
 
   <div class="section" id="filterSection">
     <label>Enter Motor Tag to View:</label>
-    <input type="text" id="filterInput" placeholder="e.g., CGM-700" oninput="filterMotors()">
+    <input type="text" id="filterInput" placeholder="e.g., CGM-700">
+    <button onclick="viewSpecificMotor()">🔍 View Motor</button>
   </div>
 
   <div class="section" id="passwordSection">
@@ -204,6 +205,39 @@
       });
     }
 
+    function viewSpecificMotor() {
+      const tag = filterInput.value.trim().toLowerCase();
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+      const motor = motors.find(m => m.tag.toLowerCase() === tag);
+
+      tableBody.innerHTML = "";
+
+      if (motor) {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${motor.date}</td>
+          <td>${motor.tag}</td>
+          <td>${motor.flc}</td>
+          <td>${motor.nlc}</td>
+          <td>${motor.voltage}</td>
+          <td>${motor.rotation}</td>
+          <td>${motor.temp_de_start}</td>
+          <td>${motor.temp_de_end}</td>
+          <td>${motor.winding_start}</td>
+          <td>${motor.winding_end}</td>
+          <td>${motor.temp_nde_start}</td>
+          <td>${motor.temp_nde_end}</td>
+          <td>${motor.sound}</td>
+          <td>${motor.remarks}</td>
+        `;
+        tableBody.appendChild(row);
+        document.getElementById("motorLogSection").style.display = "block";
+      } else {
+        alert("Motor with tag '" + tag + "' not found.");
+        document.getElementById("motorLogSection").style.display = "none";
+      }
+    }
+
     function populateEditForm() {
       const motors = JSON.parse(localStorage.getItem("motors")) || [];
       const selectedTag = editSelect.value;
@@ -271,8 +305,8 @@
         document.getElementById("passwordSection").style.display = "block";
       } else if (action === "viewOne") {
         document.getElementById("filterSection").style.display = "block";
+        document.getElementById("motorLogSection").style.display = "none";
         filterInput.value = "";
-        loadMotors();
       } else if (action === "viewAll") {
         document.getElementById("motorLogSection").style.display = "block";
         loadMotors();
@@ -293,10 +327,6 @@
       } else {
         alert("Incorrect password!");
       }
-    }
-
-    function filterMotors() {
-      loadMotors(filterInput.value);
     }
 
     function downloadPDF() {
