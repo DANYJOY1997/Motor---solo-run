@@ -127,6 +127,9 @@
   <div class="section" id="add">
     <h2>➕ Add New Motor</h2>
     <form action="/add" method="POST">
+      <label>Date:</label>
+      <input type="date" name="Date" required>
+
       <label>Motor Tag:</label>
       <input type="text" name="Motor Tag" required>
 
@@ -142,14 +145,23 @@
       <label>Direction of Rotation:</label>
       <input type="text" name="Direction of Rotation">
 
-      <label>Temp DE (°C):</label>
-      <input type="text" name="Temp DE (°C)">
+      <label>Temp DE Start (°C):</label>
+      <input type="text" name="Temp DE Start (°C)">
 
-      <label>Winding Temp (°C):</label>
-      <input type="text" name="Winding Temp (°C)">
+      <label>Temp DE End (°C):</label>
+      <input type="text" name="Temp DE End (°C)">
 
-      <label>Temp NDE (°C):</label>
-      <input type="text" name="Temp NDE (°C)">
+      <label>Winding Temp Start (°C):</label>
+      <input type="text" name="Winding Temp Start (°C)">
+
+      <label>Winding Temp End (°C):</label>
+      <input type="text" name="Winding Temp End (°C)">
+
+      <label>Temp NDE Start (°C):</label>
+      <input type="text" name="Temp NDE Start (°C)">
+
+      <label>Temp NDE End (°C):</label>
+      <input type="text" name="Temp NDE End (°C)">
 
       <label>Abnormal Sound:</label>
       <select name="Abnormal Sound">
@@ -170,27 +182,35 @@
     <table>
       <thead>
         <tr>
+          <th>Date</th>
           <th>Motor Tag</th>
           <th>FLC</th>
           <th>NLC</th>
           <th>Voltage</th>
           <th>Rotation</th>
-          <th>Temp DE</th>
-          <th>Winding Temp</th>
-          <th>Temp NDE</th>
+          <th>Temp DE (Start)</th>
+          <th>Temp DE (End)</th>
+          <th>Winding Temp (Start)</th>
+          <th>Winding Temp (End)</th>
+          <th>Temp NDE (Start)</th>
+          <th>Temp NDE (End)</th>
           <th>Abnormal Sound</th>
           <th>Remarks</th>
         </tr>
       </thead>
       <tbody>
         <tr>
+          <td>2025-07-06</td>
           <td>BGM-703</td>
           <td>10.2</td>
           <td>6.5</td>
           <td>415</td>
           <td>Clockwise</td>
+          <td>42</td>
           <td>55</td>
+          <td>48</td>
           <td>60</td>
+          <td>41</td>
           <td>52</td>
           <td>No</td>
           <td>Normal</td>
@@ -204,37 +224,53 @@
     <h2>✏️ Edit Motor Entry</h2>
     <div class="edit-box">
       <form action="/edit" method="POST">
-        <label>Enter Motor Tag to Edit:</label>
-        <input type="text" name="edit_tag" required>
+        <label>Current Motor Tag:</label>
+        <input type="text" name="current_tag" required>
 
-        <label>New FLC (A):</label>
+        <label>New Motor Tag (if changing):</label>
+        <input type="text" name="new_tag">
+
+        <label>Date (if changing):</label>
+        <input type="date" name="Date">
+
+        <label>FLC (A) (if changing):</label>
         <input type="text" name="FLC (A)">
 
-        <label>New NLC (A):</label>
+        <label>NLC (A) (if changing):</label>
         <input type="text" name="NLC (A)">
 
-        <label>New Rated Voltage (V):</label>
+        <label>Rated Voltage (V) (if changing):</label>
         <input type="text" name="Rated Voltage (V)">
 
-        <label>New Direction of Rotation:</label>
+        <label>Direction of Rotation (if changing):</label>
         <input type="text" name="Direction of Rotation">
 
-        <label>New Temp DE (°C):</label>
-        <input type="text" name="Temp DE (°C)">
+        <label>Temp DE Start (if changing):</label>
+        <input type="text" name="Temp DE Start (°C)">
 
-        <label>New Winding Temp (°C):</label>
-        <input type="text" name="Winding Temp (°C)">
+        <label>Temp DE End (if changing):</label>
+        <input type="text" name="Temp DE End (°C)">
 
-        <label>New Temp NDE (°C):</label>
-        <input type="text" name="Temp NDE (°C)">
+        <label>Winding Temp Start (if changing):</label>
+        <input type="text" name="Winding Temp Start (°C)">
 
-        <label>New Abnormal Sound:</label>
+        <label>Winding Temp End (if changing):</label>
+        <input type="text" name="Winding Temp End (°C)">
+
+        <label>Temp NDE Start (if changing):</label>
+        <input type="text" name="Temp NDE Start (°C)">
+
+        <label>Temp NDE End (if changing):</label>
+        <input type="text" name="Temp NDE End (°C)">
+
+        <label>Abnormal Sound (if changing):</label>
         <select name="Abnormal Sound">
+          <option value="">-- Select if changing --</option>
           <option value="No">No</option>
           <option value="Yes">Yes</option>
         </select>
 
-        <label>New Remarks:</label>
+        <label>Remarks (if changing):</label>
         <input type="text" name="Remarks">
 
         <br><button type="submit">Update Motor</button>
