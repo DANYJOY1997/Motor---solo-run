@@ -50,9 +50,6 @@
       padding: 20px;
       border-radius: 8px;
     }
-    #passwordPrompt {
-      margin-top: 20px;
-    }
   </style>
   <script>
     function showSection() {
@@ -61,9 +58,10 @@
       document.getElementById("edit").style.display = "none";
       document.getElementById("view").style.display = "none";
       document.getElementById("passwordPrompt").style.display = "none";
+      document.getElementById("addPasswordPrompt").style.display = "none";
 
       if (selected === "add") {
-        document.getElementById("add").style.display = "block";
+        document.getElementById("addPasswordPrompt").style.display = "block";
       } else if (selected === "edit") {
         document.getElementById("passwordPrompt").style.display = "block";
       } else if (selected === "view") {
@@ -73,11 +71,23 @@
 
     function checkPassword() {
       const password = document.getElementById("editPassword").value;
-      const correctPassword = "area123"; // Updated password
+      const correctPassword = "area123";
 
       if (password === correctPassword) {
         document.getElementById("edit").style.display = "block";
         document.getElementById("passwordPrompt").style.display = "none";
+      } else {
+        alert("Incorrect password!");
+      }
+    }
+
+    function checkAddPassword() {
+      const password = document.getElementById("addPassword").value;
+      const correctPassword = "area123";
+
+      if (password === correctPassword) {
+        document.getElementById("add").style.display = "block";
+        document.getElementById("addPasswordPrompt").style.display = "none";
       } else {
         alert("Incorrect password!");
       }
@@ -99,7 +109,14 @@
     </select>
   </div>
 
-  <!-- Password Prompt -->
+  <!-- Add Motor Password Prompt -->
+  <div class="section" id="addPasswordPrompt">
+    <label>Enter password to add motor:</label>
+    <input type="password" id="addPassword">
+    <button onclick="checkAddPassword()">Submit</button>
+  </div>
+
+  <!-- Edit Password Prompt -->
   <div class="section" id="passwordPrompt">
     <label>Enter password to edit motor details:</label>
     <input type="password" id="editPassword">
