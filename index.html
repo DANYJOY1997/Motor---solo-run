@@ -44,10 +44,13 @@
       padding: 10px;
       text-align: left;
     }
-    #motorForm, #passwordSection, #filterSection, #motorLogSection {
+    #addForm, #editForm, #passwordSection, #filterSection, #motorLogSection {
       display: none;
     }
   </style>
+  <!-- jsPDF + autoTable CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -60,7 +63,8 @@
       <option value="">-- Choose --</option>
       <option value="viewAll">📄 View All Motors</option>
       <option value="viewOne">🔍 View Specific Motor</option>
-      <option value="edit">✏️ Add / Edit Motor</option>
+      <option value="add">📥 Add Motor</option>
+      <option value="edit">🛠 Edit Motor</option>
     </select>
   </div>
 
@@ -77,57 +81,23 @@
     <button onclick="checkPassword()">Submit</button>
   </div>
 
-  <!-- Add/Edit Form -->
+  <!-- Add Motor Form -->
   <div class="section">
-    <form id="motorForm">
-      <h2>✏️ Add / Update Motor</h2>
-      <label>Date:</label>
-      <input type="date" id="date" required>
+    <form id="addForm">
+      <h2>📥 Add Motor</h2>
+      <div id="addFields"></div>
+      <button type="submit">💾 Save Motor</button>
+    </form>
+  </div>
 
-      <label>Motor Tag:</label>
-      <input type="text" id="tag" required>
-
-      <label>FLC (A):</label>
-      <input type="text" id="flc">
-
-      <label>NLC (A):</label>
-      <input type="text" id="nlc">
-
-      <label>Rated Voltage (V):</label>
-      <input type="text" id="voltage">
-
-      <label>Direction of Rotation:</label>
-      <input type="text" id="rotation">
-
-      <label>Temp DE Start (°C):</label>
-      <input type="text" id="temp_de_start">
-
-      <label>Temp DE End (°C):</label>
-      <input type="text" id="temp_de_end">
-
-      <label>Winding Temp Start (°C):</label>
-      <input type="text" id="winding_start">
-
-      <label>Winding Temp End (°C):</label>
-      <input type="text" id="winding_end">
-
-      <label>Temp NDE Start (°C):</label>
-      <input type="text" id="temp_nde_start">
-
-      <label>Temp NDE End (°C):</label>
-      <input type="text" id="temp_nde_end">
-
-      <label>Abnormal Sound:</label>
-      <select id="sound">
-        <option value="No">No</option>
-        <option value="Yes">Yes</option>
-      </select>
-
-      <label>Remarks:</label>
-      <textarea id="remarks"></textarea>
-
-      <br>
-      <button type="submit">💾 Save / Update</button>
+  <!-- Edit Motor Form -->
+  <div class="section">
+    <form id="editForm">
+      <h2>🛠 Edit Motor</h2>
+      <label>Select Motor to Edit:</label>
+      <select id="editSelect" onchange="populateEditForm()"></select>
+      <div id="editFields"></div>
+      <button type="submit">🔄 Update Motor</button>
     </form>
   </div>
 
@@ -151,17 +121,65 @@
           <th>NDE End</th>
           <th>Sound</th>
           <th>Remarks</th>
-          <th>Edit</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
+    <button onclick="downloadPDF()">📄 Download PDF</button>
   </div>
 
   <script>
-    const form = document.getElementById("motorForm");
+    const addForm = document.getElementById("addForm");
+    const editForm = document.getElementById("editForm");
     const tableBody = document.querySelector("#motorTable tbody");
     const filterInput = document.getElementById("filterInput");
+    const editSelect = document.getElementById("editSelect");
+
+    const fields = [
+      { id: "date", label: "Date", type: "date" },
+      { id: "tag", label: "Motor Tag", type: "text" },
+      { id: "flc", label: "FLC (A)", type: "text" },
+      { id: "nlc", label: "NLC (A)", type: "text" },
+      { id: "voltage", label: "Rated Voltage (V)", type: "text" },
+      { id: "rotation", label: "Direction of Rotation", type: "text" },
+      { id: "temp_de_start", label: "Temp DE Start (°C)", type: "text" },
+      { id: "temp_de_end", label: "Temp DE End (°C)", type: "text" },
+      { id: "winding_start", label: "Winding Temp Start (°C)", type: "text" },
+      { id: "winding_end", label: "Winding Temp End (°C)", type: "text" },
+      { id: "temp_nde_start", label: "Temp NDE Start (°C)", type: "text" },
+      { id: "temp_nde_end", label: "Temp NDE End (°C)", type: "text" },
+      { id: "sound", label: "Abnormal Sound", type: "select", options: ["No", "Yes"] },
+      { id: "remarks", label: "Remarks", type: "textarea" },
+    ];
+
+    function createFields(container, prefix = "") {
+      container.innerHTML = "";
+      fields.forEach(field => {
+        const label = document.createElement("label");
+        label.textContent = field.label;
+        container.appendChild(label);
+        let input;
+        if (field.type === "textarea") {
+          input = document.createElement("textarea");
+        } else if (field.type === "select") {
+          input = document.createElement("select");
+          field.options.forEach(opt => {
+            const o = document.createElement("option");
+            o.value = opt;
+            o.textContent = opt;
+            input.appendChild(o);
+          });
+        } else {
+          input = document.createElement("input");
+          input.type = field.type;
+        }
+        input.id = prefix + field.id;
+        container.appendChild(input);
+      });
+    }
+
+    createFields(document.getElementById("addFields"));
+    createFields(document.getElementById("editFields"), "edit_");
 
     function loadMotors(filter = "") {
       const motors = JSON.parse(localStorage.getItem("motors")) || [];
@@ -171,7 +189,7 @@
         m.tag.toLowerCase().includes(filter.toLowerCase())
       );
 
-      filtered.forEach((m, i) => {
+      filtered.forEach((m) => {
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${m.date}</td>
@@ -188,89 +206,95 @@
           <td>${m.temp_nde_end}</td>
           <td>${m.sound}</td>
           <td>${m.remarks}</td>
-          <td><button onclick="editMotor(${i})">Edit</button></td>
         `;
         tableBody.appendChild(row);
       });
     }
 
-    function editMotor(index) {
+    function populateEditForm() {
       const motors = JSON.parse(localStorage.getItem("motors")) || [];
-      const m = motors[index];
-      document.getElementById("date").value = m.date;
-      document.getElementById("tag").value = m.tag;
-      document.getElementById("flc").value = m.flc;
-      document.getElementById("nlc").value = m.nlc;
-      document.getElementById("voltage").value = m.voltage;
-      document.getElementById("rotation").value = m.rotation;
-      document.getElementById("temp_de_start").value = m.temp_de_start;
-      document.getElementById("temp_de_end").value = m.temp_de_end;
-      document.getElementById("winding_start").value = m.winding_start;
-      document.getElementById("winding_end").value = m.winding_end;
-      document.getElementById("temp_nde_start").value = m.temp_nde_start;
-      document.getElementById("temp_nde_end").value = m.temp_nde_end;
-      document.getElementById("sound").value = m.sound;
-      document.getElementById("remarks").value = m.remarks;
+      const selectedTag = editSelect.value;
+      const motor = motors.find(m => m.tag === selectedTag);
+      if (!motor) return;
+      fields.forEach(field => {
+        document.getElementById("edit_" + field.id).value = motor[field.id];
+      });
     }
 
-    form.onsubmit = function (e) {
+    function updateEditDropdown() {
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+      editSelect.innerHTML = '<option value="">-- Choose Motor --</option>';
+      motors.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m.tag;
+        opt.textContent = m.tag;
+        editSelect.appendChild(opt);
+      });
+    }
+
+    addForm.onsubmit = function (e) {
       e.preventDefault();
       const motors = JSON.parse(localStorage.getItem("motors")) || [];
-      const tag = document.getElementById("tag").value;
-      const existingIndex = motors.findIndex(m => m.tag === tag);
-
-      const newMotor = {
-        date: document.getElementById("date").value,
-        tag,
-        flc: document.getElementById("flc").value,
-        nlc: document.getElementById("nlc").value,
-        voltage: document.getElementById("voltage").value,
-        rotation: document.getElementById("rotation").value,
-        temp_de_start: document.getElementById("temp_de_start").value,
-        temp_de_end: document.getElementById("temp_de_end").value,
-        winding_start: document.getElementById("winding_start").value,
-        winding_end: document.getElementById("winding_end").value,
-        temp_nde_start: document.getElementById("temp_nde_start").value,
-        temp_nde_end: document.getElementById("temp_nde_end").value,
-        sound: document.getElementById("sound").value,
-        remarks: document.getElementById("remarks").value
-      };
-
-      if (existingIndex >= 0) {
-        motors[existingIndex] = newMotor;
-      } else {
-        motors.push(newMotor);
+      const newMotor = {};
+      fields.forEach(field => {
+        newMotor[field.id] = document.getElementById(field.id).value;
+      });
+      if (motors.find(m => m.tag === newMotor.tag)) {
+        alert("Motor tag already exists!");
+        return;
       }
-
+      motors.push(newMotor);
       localStorage.setItem("motors", JSON.stringify(motors));
-      form.reset();
-      loadMotors();
-      document.getElementById("motorLogSection").style.display = "block";
+      alert("Motor added successfully!");
+      addForm.reset();
+    };
+
+    editForm.onsubmit = function (e) {
+      e.preventDefault();
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+      const originalTag = editSelect.value;
+      const index = motors.findIndex(m => m.tag === originalTag);
+      if (index < 0) return alert("Motor not found.");
+
+      const updatedMotor = {};
+      fields.forEach(field => {
+        updatedMotor[field.id] = document.getElementById("edit_" + field.id).value;
+      });
+
+      motors[index] = updatedMotor;
+      localStorage.setItem("motors", JSON.stringify(motors));
+      alert("Motor updated successfully!");
+      updateEditDropdown();
     };
 
     function handleAction(action) {
-      form.style.display = "none";
+      addForm.style.display = "none";
+      editForm.style.display = "none";
       document.getElementById("passwordSection").style.display = "none";
       document.getElementById("filterSection").style.display = "none";
       document.getElementById("motorLogSection").style.display = "none";
 
-      if (action === "edit") {
+      if (action === "add" || action === "edit") {
         document.getElementById("passwordSection").style.display = "block";
       } else if (action === "viewOne") {
         document.getElementById("filterSection").style.display = "block";
-        document.getElementById("motorLogSection").style.display = "block";
         filterInput.value = "";
-        loadMotors(""); // load all for filtering
       } else if (action === "viewAll") {
         document.getElementById("motorLogSection").style.display = "block";
-        loadMotors(); // load all motors
+        loadMotors();
       }
     }
 
     function checkPassword() {
+      const action = document.getElementById("actionSelect").value;
       const pass = document.getElementById("passwordInput").value;
       if (pass === "area123") {
-        form.style.display = "block";
+        if (action === "add") {
+          addForm.style.display = "block";
+        } else if (action === "edit") {
+          editForm.style.display = "block";
+          updateEditDropdown();
+        }
         document.getElementById("passwordSection").style.display = "none";
       } else {
         alert("Incorrect password!");
@@ -279,6 +303,41 @@
 
     function filterMotors() {
       loadMotors(filterInput.value);
+    }
+
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      doc.text("Motor Log Report", 14, 15);
+
+      const headers = [[
+        "Date", "Tag", "FLC", "NLC", "Voltage", "Rotation",
+        "DE Start", "DE End", "Winding Start", "Winding End",
+        "NDE Start", "NDE End", "Sound", "Remarks"
+      ]];
+
+      const rows = [];
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+
+      motors.forEach(m => {
+        rows.push([
+          m.date, m.tag, m.flc, m.nlc, m.voltage, m.rotation,
+          m.temp_de_start, m.temp_de_end,
+          m.winding_start, m.winding_end,
+          m.temp_nde_start, m.temp_nde_end,
+          m.sound, m.remarks
+        ]);
+      });
+
+      doc.autoTable({
+        head: headers,
+        body: rows,
+        startY: 20,
+        styles: { fontSize: 8 },
+        headStyles: { fillColor: [60, 141, 188] }
+      });
+
+      doc.save("motor_log.pdf");
     }
   </script>
 
