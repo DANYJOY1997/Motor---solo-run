@@ -44,7 +44,7 @@
       padding: 10px;
       text-align: left;
     }
-    #motorForm, #passwordSection, #filterSection {
+    #motorForm, #passwordSection, #filterSection, #motorLogSection {
       display: none;
     }
   </style>
@@ -132,7 +132,7 @@
   </div>
 
   <!-- Motor Log Table -->
-  <div class="section">
+  <div class="section" id="motorLogSection">
     <h2>📄 Motor Log</h2>
     <table id="motorTable">
       <thead>
@@ -245,20 +245,25 @@
       localStorage.setItem("motors", JSON.stringify(motors));
       form.reset();
       loadMotors();
+      document.getElementById("motorLogSection").style.display = "block";
     };
 
     function handleAction(action) {
       form.style.display = "none";
       document.getElementById("passwordSection").style.display = "none";
       document.getElementById("filterSection").style.display = "none";
-      loadMotors(); // show all by default
+      document.getElementById("motorLogSection").style.display = "none";
 
       if (action === "edit") {
         document.getElementById("passwordSection").style.display = "block";
       } else if (action === "viewOne") {
         document.getElementById("filterSection").style.display = "block";
+        document.getElementById("motorLogSection").style.display = "block";
         filterInput.value = "";
-        loadMotors(""); // load all so search can work
+        loadMotors(""); // load all for filtering
+      } else if (action === "viewAll") {
+        document.getElementById("motorLogSection").style.display = "block";
+        loadMotors(); // load all motors
       }
     }
 
@@ -275,9 +280,7 @@
     function filterMotors() {
       loadMotors(filterInput.value);
     }
-
-    loadMotors(); // initial view
   </script>
 
 </body>
-</html>>
+</html>
