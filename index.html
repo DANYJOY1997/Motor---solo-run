@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Motor Data Logger</title>
   <style>
     body {
@@ -13,12 +13,11 @@
       color: #333;
     }
     .section {
-      margin-bottom: 50px;
-      display: none;
+      margin-bottom: 40px;
     }
     label {
       display: block;
-      margin: 8px 0 4px;
+      margin: 10px 0 4px;
     }
     input, select, textarea {
       padding: 8px;
@@ -45,238 +44,216 @@
       padding: 10px;
       text-align: left;
     }
-    .edit-box {
-      background-color: #eee;
-      padding: 20px;
-      border-radius: 8px;
+    #motorForm {
+      display: none;
     }
   </style>
-  <script>
-    function showSection() {
-      const selected = document.getElementById("actionSelect").value;
-      document.getElementById("add").style.display = "none";
-      document.getElementById("edit").style.display = "none";
-      document.getElementById("view").style.display = "none";
-      document.getElementById("passwordPrompt").style.display = "none";
-      document.getElementById("addPasswordPrompt").style.display = "none";
-
-      if (selected === "add") {
-        document.getElementById("addPasswordPrompt").style.display = "block";
-      } else if (selected === "edit") {
-        document.getElementById("passwordPrompt").style.display = "block";
-      } else if (selected === "view") {
-        document.getElementById("view").style.display = "block";
-      }
-    }
-
-    function checkPassword() {
-      const password = document.getElementById("editPassword").value;
-      const correctPassword = "area123";
-
-      if (password === correctPassword) {
-        document.getElementById("edit").style.display = "block";
-        document.getElementById("passwordPrompt").style.display = "none";
-      } else {
-        alert("Incorrect password!");
-      }
-    }
-
-    function checkAddPassword() {
-      const password = document.getElementById("addPassword").value;
-      const correctPassword = "area123";
-
-      if (password === correctPassword) {
-        document.getElementById("add").style.display = "block";
-        document.getElementById("addPasswordPrompt").style.display = "none";
-      } else {
-        alert("Incorrect password!");
-      }
-    }
-  </script>
 </head>
 <body>
 
   <h1>🔌 Motor Data Logger</h1>
 
   <!-- Action Selection -->
-  <div class="section" style="display: block;">
+  <div class="section">
     <label><strong>Select Action:</strong></label>
-    <select id="actionSelect" onchange="showSection()">
-      <option value="">-- Choose an action --</option>
-      <option value="add">➕ Add New Motor</option>
+    <select id="actionSelect" onchange="handleAction(this.value)">
+      <option value="">-- Choose --</option>
       <option value="view">📄 View Motor Log</option>
-      <option value="edit">✏️ Edit Motor Entry</option>
+      <option value="edit">✏️ Add / Edit Motor</option>
     </select>
   </div>
 
-  <!-- Add Motor Password Prompt -->
-  <div class="section" id="addPasswordPrompt">
-    <label>Enter password to add motor:</label>
-    <input type="password" id="addPassword">
-    <button onclick="checkAddPassword()">Submit</button>
-  </div>
-
-  <!-- Edit Password Prompt -->
-  <div class="section" id="passwordPrompt">
-    <label>Enter password to edit motor details:</label>
-    <input type="password" id="editPassword">
+  <!-- Password Prompt -->
+  <div class="section" id="passwordSection" style="display:none;">
+    <label>Enter Password:</label>
+    <input type="password" id="passwordInput">
     <button onclick="checkPassword()">Submit</button>
   </div>
 
-  <!-- Section 1: Add Motor -->
-  <div class="section" id="add">
-    <h2>➕ Add New Motor</h2>
-    <form action="/add" method="POST">
+  <!-- Add/Edit Form -->
+  <div class="section">
+    <form id="motorForm">
+      <h2>✏️ Add / Update Motor</h2>
       <label>Date:</label>
-      <input type="date" name="Date" required>
+      <input type="date" id="date" required>
 
       <label>Motor Tag:</label>
-      <input type="text" name="Motor Tag" required>
+      <input type="text" id="tag" required>
 
       <label>FLC (A):</label>
-      <input type="text" name="FLC (A)">
+      <input type="text" id="flc">
 
       <label>NLC (A):</label>
-      <input type="text" name="NLC (A)">
+      <input type="text" id="nlc">
 
       <label>Rated Voltage (V):</label>
-      <input type="text" name="Rated Voltage (V)">
+      <input type="text" id="voltage">
 
       <label>Direction of Rotation:</label>
-      <input type="text" name="Direction of Rotation">
+      <input type="text" id="rotation">
 
       <label>Temp DE Start (°C):</label>
-      <input type="text" name="Temp DE Start (°C)">
+      <input type="text" id="temp_de_start">
 
       <label>Temp DE End (°C):</label>
-      <input type="text" name="Temp DE End (°C)">
+      <input type="text" id="temp_de_end">
 
       <label>Winding Temp Start (°C):</label>
-      <input type="text" name="Winding Temp Start (°C)">
+      <input type="text" id="winding_start">
 
       <label>Winding Temp End (°C):</label>
-      <input type="text" name="Winding Temp End (°C)">
+      <input type="text" id="winding_end">
 
       <label>Temp NDE Start (°C):</label>
-      <input type="text" name="Temp NDE Start (°C)">
+      <input type="text" id="temp_nde_start">
 
       <label>Temp NDE End (°C):</label>
-      <input type="text" name="Temp NDE End (°C)">
+      <input type="text" id="temp_nde_end">
 
       <label>Abnormal Sound:</label>
-      <select name="Abnormal Sound">
+      <select id="sound">
         <option value="No">No</option>
         <option value="Yes">Yes</option>
       </select>
 
       <label>Remarks:</label>
-      <textarea name="Remarks"></textarea>
+      <textarea id="remarks"></textarea>
 
-      <br><button type="submit">Save Motor</button>
+      <br>
+      <button type="submit">💾 Save / Update</button>
     </form>
   </div>
 
-  <!-- Section 2: View Motors -->
-  <div class="section" id="view">
+  <!-- View Table -->
+  <div class="section">
     <h2>📄 Motor Log</h2>
-    <table>
+    <table id="motorTable">
       <thead>
         <tr>
           <th>Date</th>
-          <th>Motor Tag</th>
+          <th>Tag</th>
           <th>FLC</th>
           <th>NLC</th>
           <th>Voltage</th>
           <th>Rotation</th>
-          <th>Temp DE (Start)</th>
-          <th>Temp DE (End)</th>
-          <th>Winding Temp (Start)</th>
-          <th>Winding Temp (End)</th>
-          <th>Temp NDE (Start)</th>
-          <th>Temp NDE (End)</th>
-          <th>Abnormal Sound</th>
+          <th>DE Start</th>
+          <th>DE End</th>
+          <th>Winding Start</th>
+          <th>Winding End</th>
+          <th>NDE Start</th>
+          <th>NDE End</th>
+          <th>Sound</th>
           <th>Remarks</th>
+          <th>Edit</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>2025-07-06</td>
-          <td>BGM-703</td>
-          <td>10.2</td>
-          <td>6.5</td>
-          <td>415</td>
-          <td>Clockwise</td>
-          <td>42</td>
-          <td>55</td>
-          <td>48</td>
-          <td>60</td>
-          <td>41</td>
-          <td>52</td>
-          <td>No</td>
-          <td>Normal</td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
   </div>
 
-  <!-- Section 3: Edit Motor -->
-  <div class="section" id="edit">
-    <h2>✏️ Edit Motor Entry</h2>
-    <div class="edit-box">
-      <form action="/edit" method="POST">
-        <label>Current Motor Tag:</label>
-        <input type="text" name="current_tag" required>
+  <script>
+    const form = document.getElementById("motorForm");
+    const table = document.querySelector("#motorTable tbody");
 
-        <label>New Motor Tag (if changing):</label>
-        <input type="text" name="new_tag">
+    function loadMotors() {
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+      table.innerHTML = "";
+      motors.forEach((m, i) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${m.date}</td>
+          <td>${m.tag}</td>
+          <td>${m.flc}</td>
+          <td>${m.nlc}</td>
+          <td>${m.voltage}</td>
+          <td>${m.rotation}</td>
+          <td>${m.temp_de_start}</td>
+          <td>${m.temp_de_end}</td>
+          <td>${m.winding_start}</td>
+          <td>${m.winding_end}</td>
+          <td>${m.temp_nde_start}</td>
+          <td>${m.temp_nde_end}</td>
+          <td>${m.sound}</td>
+          <td>${m.remarks}</td>
+          <td><button onclick="editMotor(${i})">Edit</button></td>
+        `;
+        table.appendChild(row);
+      });
+    }
 
-        <label>Date (if changing):</label>
-        <input type="date" name="Date">
+    function editMotor(index) {
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+      const m = motors[index];
+      document.getElementById("date").value = m.date;
+      document.getElementById("tag").value = m.tag;
+      document.getElementById("flc").value = m.flc;
+      document.getElementById("nlc").value = m.nlc;
+      document.getElementById("voltage").value = m.voltage;
+      document.getElementById("rotation").value = m.rotation;
+      document.getElementById("temp_de_start").value = m.temp_de_start;
+      document.getElementById("temp_de_end").value = m.temp_de_end;
+      document.getElementById("winding_start").value = m.winding_start;
+      document.getElementById("winding_end").value = m.winding_end;
+      document.getElementById("temp_nde_start").value = m.temp_nde_start;
+      document.getElementById("temp_nde_end").value = m.temp_nde_end;
+      document.getElementById("sound").value = m.sound;
+      document.getElementById("remarks").value = m.remarks;
+    }
 
-        <label>FLC (A) (if changing):</label>
-        <input type="text" name="FLC (A)">
+    form.onsubmit = function (e) {
+      e.preventDefault();
+      const motors = JSON.parse(localStorage.getItem("motors")) || [];
+      const tag = document.getElementById("tag").value;
+      const existingIndex = motors.findIndex(m => m.tag === tag);
 
-        <label>NLC (A) (if changing):</label>
-        <input type="text" name="NLC (A)">
+      const newMotor = {
+        date: document.getElementById("date").value,
+        tag,
+        flc: document.getElementById("flc").value,
+        nlc: document.getElementById("nlc").value,
+        voltage: document.getElementById("voltage").value,
+        rotation: document.getElementById("rotation").value,
+        temp_de_start: document.getElementById("temp_de_start").value,
+        temp_de_end: document.getElementById("temp_de_end").value,
+        winding_start: document.getElementById("winding_start").value,
+        winding_end: document.getElementById("winding_end").value,
+        temp_nde_start: document.getElementById("temp_nde_start").value,
+        temp_nde_end: document.getElementById("temp_nde_end").value,
+        sound: document.getElementById("sound").value,
+        remarks: document.getElementById("remarks").value
+      };
 
-        <label>Rated Voltage (V) (if changing):</label>
-        <input type="text" name="Rated Voltage (V)">
+      if (existingIndex >= 0) {
+        motors[existingIndex] = newMotor;
+      } else {
+        motors.push(newMotor);
+      }
 
-        <label>Direction of Rotation (if changing):</label>
-        <input type="text" name="Direction of Rotation">
+      localStorage.setItem("motors", JSON.stringify(motors));
+      form.reset();
+      loadMotors();
+    };
 
-        <label>Temp DE Start (if changing):</label>
-        <input type="text" name="Temp DE Start (°C)">
+    function handleAction(action) {
+      document.getElementById("motorForm").style.display = "none";
+      document.getElementById("passwordSection").style.display = "none";
+      if (action === "edit") {
+        document.getElementById("passwordSection").style.display = "block";
+      }
+    }
 
-        <label>Temp DE End (if changing):</label>
-        <input type="text" name="Temp DE End (°C)">
+    function checkPassword() {
+      const pass = document.getElementById("passwordInput").value;
+      if (pass === "area123") {
+        document.getElementById("motorForm").style.display = "block";
+        document.getElementById("passwordSection").style.display = "none";
+      } else {
+        alert("Incorrect password!");
+      }
+    }
 
-        <label>Winding Temp Start (if changing):</label>
-        <input type="text" name="Winding Temp Start (°C)">
-
-        <label>Winding Temp End (if changing):</label>
-        <input type="text" name="Winding Temp End (°C)">
-
-        <label>Temp NDE Start (if changing):</label>
-        <input type="text" name="Temp NDE Start (°C)">
-
-        <label>Temp NDE End (if changing):</label>
-        <input type="text" name="Temp NDE End (°C)">
-
-        <label>Abnormal Sound (if changing):</label>
-        <select name="Abnormal Sound">
-          <option value="">-- Select if changing --</option>
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-
-        <label>Remarks (if changing):</label>
-        <input type="text" name="Remarks">
-
-        <br><button type="submit">Update Motor</button>
-      </form>
-    </div>
-  </div>
+    loadMotors();
+  </script>
 
 </body>
 </html>
