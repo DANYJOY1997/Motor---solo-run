@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Motors No Load Trial</title>
@@ -54,29 +55,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-  <script>
-    const staticMotors = [
-      {
-        "date": "2025-07-06",
-        "tag": "CGM-700",
-        "flc": "30",
-        "nlc": "22",
-        "voltage": "415",
-        "power": "18.5",
-        "rpm": "1480",
-        "rotation": "CW",
-        "temp_de_start": "35",
-        "temp_de_end": "50",
-        "winding_start": "30",
-        "winding_end": "45",
-        "temp_nde_start": "34",
-        "temp_nde_end": "49",
-        "sound": "No",
-        "remarks": "OK"
-      }
-    ];
-    localStorage.setItem("motors", JSON.stringify(staticMotors));
-  </script>  <h1>⚠️⚡ Motors No Load Trial</h1>
+
+  <h1>⚠️⚡ Motors No Load Trial</h1>
+
   <div class="section">
     <label><strong>Select Action:</strong></label>
     <select id="actionSelect" onchange="handleAction(this.value)">
@@ -84,35 +65,40 @@
       <option value="viewAll">📄 View All Motors</option>
       <option value="viewOne">🔍 View Specific Motor</option>
       <option value="add">📥 Add Motor</option>
-      <option value="edit">🚰 Edit Motor</option>
+      <option value="edit">🛠 Edit Motor</option>
     </select>
   </div>
+
   <div class="section" id="filterSection">
     <label>Enter Motor Tag to View:</label>
     <input type="text" id="filterInput" placeholder="e.g., CGM-700">
     <button onclick="viewSpecificMotor()">🔍 View Motor</button>
   </div>
+
   <div class="section" id="passwordSection">
     <label>Enter Password:</label>
     <input type="password" id="passwordInput">
     <button onclick="checkPassword()">Submit</button>
   </div>
+
   <div class="section">
     <form id="addForm">
       <h2>📥 Add Motor</h2>
       <div id="addFields"></div>
-      <button type="submit">📂 Save Motor</button>
+      <button type="submit">💾 Save Motor</button>
     </form>
   </div>
+
   <div class="section">
     <form id="editForm">
-      <h2>🚰 Edit Motor</h2>
+      <h2>🛠 Edit Motor</h2>
       <label>Select Motor to Edit:</label>
       <select id="editSelect" onchange="populateEditForm()"></select>
       <div id="editFields"></div>
       <button type="submit">🔄 Update Motor</button>
     </form>
   </div>
+
   <div class="section" id="motorLogSection">
     <h2>📄 Motor Log</h2>
     <table id="motorTable">
@@ -139,7 +125,9 @@
       <tbody></tbody>
     </table>
     <button onclick="downloadPDF()">📄 Download PDF</button>
-  </div>  <script>
+  </div>
+
+  <script>
     const addForm = document.getElementById("addForm");
     const editForm = document.getElementById("editForm");
     const tableBody = document.querySelector("#motorTable tbody");
@@ -385,3 +373,7 @@
       });
 
       doc.save("motor_log.pdf");
+    }
+  </script>
+</body>
+</html>
