@@ -1,5 +1,5 @@
 
-      <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -56,6 +56,34 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
+
+  <script>
+    // Replace this array below with your updated motor list (copied from your browser)
+    const staticMotors = [
+      {
+        "date": "2025-07-06",
+        "tag": "CGM-700",
+        "flc": "30",
+        "nlc": "22",
+        "voltage": "415",
+        "power": "18.5",
+        "rpm": "1480",
+        "rotation": "CW",
+        "temp_de_start": "35",
+        "temp_de_end": "50",
+        "winding_start": "30",
+        "winding_end": "45",
+        "temp_nde_start": "34",
+        "temp_nde_end": "49",
+        "sound": "No",
+        "remarks": "OK"
+      }
+      // You can paste more motor objects here if needed
+    ];
+    if (!localStorage.getItem("motors")) {
+      localStorage.setItem("motors", JSON.stringify(staticMotors));
+    }
+  </script>
 
   <h1>⚠️⚡ Motors No Load Trial</h1>
 
