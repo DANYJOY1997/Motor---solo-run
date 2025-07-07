@@ -106,6 +106,7 @@
           <th>FLC</th>
           <th>NLC</th>
           <th>Rated Voltage</th>
+          <th>Rated Power</th>
           <th>RPM</th>
           <th>Rotation</th>
           <th>Temp DE (Start)</th>
@@ -136,6 +137,7 @@
       { id: "flc", label: "FLC (A)", type: "text" },
       { id: "nlc", label: "NLC (A)", type: "text" },
       { id: "voltage", label: "Rated Voltage (V)", type: "text" },
+      { id: "power", label: "Rated Power (kW)", type: "text" },
       { id: "rpm", label: "RPM", type: "text" },
       { id: "rotation", label: "Direction of Rotation", type: "text" },
       { id: "temp_de_start", label: "Temp DE (Start)", type: "text" },
@@ -193,6 +195,7 @@
           <td>${m.flc}</td>
           <td>${m.nlc}</td>
           <td>${m.voltage}</td>
+          <td>${m.power}</td>
           <td>${m.rpm}</td>
           <td>${m.rotation}</td>
           <td>${m.temp_de_start}</td>
@@ -223,6 +226,7 @@
           <td>${motor.flc}</td>
           <td>${motor.nlc}</td>
           <td>${motor.voltage}</td>
+          <td>${motor.power}</td>
           <td>${motor.rpm}</td>
           <td>${motor.rotation}</td>
           <td>${motor.temp_de_start}</td>
@@ -339,7 +343,7 @@
       doc.text("Motor Log Report", 14, 15);
 
       const headers = [[
-        "Date", "Tag", "FLC", "NLC", "Rated Voltage", "RPM", "Rotation",
+        "Date", "Tag", "FLC", "NLC", "Rated Voltage", "Rated Power", "RPM", "Rotation",
         "Temp DE (Start)", "Temp DE (End)", "Temp Winding (Start)", "Temp Winding (End)",
         "Temp NDE (Start)", "Temp NDE (End)", "Abnormal Sound", "Remarks"
       ]];
@@ -349,7 +353,7 @@
 
       motors.forEach(m => {
         rows.push([
-          m.date, m.tag, m.flc, m.nlc, m.voltage, m.rpm, m.rotation,
+          m.date, m.tag, m.flc, m.nlc, m.voltage, m.power, m.rpm, m.rotation,
           m.temp_de_start, m.temp_de_end,
           m.winding_start, m.winding_end,
           m.temp_nde_start, m.temp_nde_end,
@@ -370,3 +374,5 @@
   </script>
 </body>
 </html>
+
+    
